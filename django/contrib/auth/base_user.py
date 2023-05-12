@@ -132,7 +132,7 @@ class AbstractBaseUser(models.Model):
         return salted_hmac(
             key_salt,
             self.password,
-            algorithm="sha256",
+            algorithm="sha1",
         ).hexdigest()
 
     @classmethod
