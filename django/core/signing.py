@@ -243,6 +243,13 @@ class Signer:
     def unsign_object(self, signed_obj, serializer=JSONSerializer, **kwargs):
         # Signer.unsign() returns str but base64 and zlib compression operate
         # on bytes.
+        try:
+            return self.unsign_object_django_1_compatible(serializer, signed_obj)
+        except:
+            return self.unsign_object_django_4(serializer, signed_obj, **kwargs)
+
+    @staticmethod
+    def unsign_object_django_1_compatible(serializer, signed_obj):
         base64d = signed_obj.encode()
         decompress = base64d[:1] == b"."
         if decompress:
@@ -253,6 +260,17 @@ class Signer:
             data = zlib.decompress(data)
         hash, serialized_data = data.split(b':', 1)
         return serializer().loads(serialized_data)
+
+    def unsign_object_django_4(self, serializer, signed_obj, **kwargs):
+        base64d = self.unsign(signed_obj, **kwargs).encode()
+        decompress = base64d[:1] == b"."
+        if decompress:
+            # It's compressed; uncompress it first.
+            base64d = base64d[1:]
+        data = b64_decode(base64d)
+        if decompress:
+            data = zlib.decompress(data)
+        return serializer().loads(data)
 
 
 class TimestampSigner(Signer):
