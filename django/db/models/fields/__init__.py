@@ -1,5 +1,6 @@
 import collections.abc
 import copy
+import six
 import datetime
 import decimal
 import math
@@ -24,6 +25,7 @@ from django.utils.dateparse import (
     parse_duration,
     parse_time,
 )
+from django.utils.encoding import force_str
 from django.utils.duration import duration_microseconds, duration_string
 from django.utils.functional import Promise, cached_property
 from django.utils.ipv6 import clean_ipv6_address
@@ -1191,9 +1193,9 @@ class CharField(Field):
         return "CharField"
 
     def to_python(self, value):
-        if isinstance(value, str) or value is None:
+        if isinstance(value, six.string_types) or value is None:
             return value
-        return str(value)
+        return force_str(value)
 
     def get_prep_value(self, value):
         value = super().get_prep_value(value)
