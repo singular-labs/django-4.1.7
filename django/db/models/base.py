@@ -3,6 +3,10 @@ import inspect
 import warnings
 from functools import partialmethod
 from itertools import chain
+from jsonfield.fields import JSONField
+import logging
+
+from django.db.models.query import QuerySet
 
 import django
 from django.apps import apps
@@ -51,6 +55,8 @@ from django.utils.encoding import force_str
 from django.utils.hashable import make_hashable
 from django.utils.text import capfirst, get_text_list
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger('django.request')
 
 
 class Deferred:
@@ -1058,6 +1064,16 @@ class Model(metaclass=ModelBase):
         # the field is nullable, allowing the save would result in silent data
         # loss.
         for field in self._meta.concrete_fields:
+            field_value = self.__getattribute__(field.name)
+            if isinstance(field, JSONField) and field_value and not isinstance(
+                field_value, (set, dict, list)
+            ) and not hasattr(self, "history_user"):
+                logger.warning("Found a JSONField with a bad type!", extra={
+                    "model": self.__class__.__name__,
+                    "field_name": field.name,
+                    "field_type": str(type(field_value)),
+                    "field_value": field_value,
+                })
             if fields and field not in fields:
                 continue
             # If the related field isn't cached, then an instance hasn't been

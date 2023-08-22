@@ -32,9 +32,6 @@ from django.utils.ipv6 import clean_ipv6_address
 from django.utils.itercompat import is_iterable
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
-import logging
-
-logger = logging.getLogger('django.request')
 
 __all__ = [
     "AutoField",
@@ -921,11 +918,6 @@ class Field(RegisterLookupMixin):
 
         Used by the default implementations of get_db_prep_save().
         """
-        if self.__class__.__name__ == "JSONField" and value \
-            and not hasattr(self.model, "history_user") \
-            and not isinstance(value, (set, dict, list)):
-            logger.info("Create of update a model with JSONField {}".format(value),
-                        extra={"value": value})
         if not prepared:
             value = self.get_prep_value(value)
         return value
