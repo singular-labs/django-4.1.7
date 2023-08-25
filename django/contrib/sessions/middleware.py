@@ -52,26 +52,5 @@ class SessionMiddleware(MiddlewareMixin):
                     max_age = request.session.get_expiry_age()
                     expires_time = time.time() + max_age
                     expires = http_date(expires_time)
-                # Save the session data and refresh the client cookie.
-                # Skip session save for 500 responses, refs #3881.
-                if response.status_code != 500:
-                    try:
-                        request.session.save()
-                    except UpdateError:
-                        raise SessionInterrupted(
-                            "The request's session was deleted before the "
-                            "request completed. The user may have logged "
-                            "out in a concurrent request, for example."
-                        )
-                    response.set_cookie(
-                        settings.SESSION_COOKIE_NAME,
-                        request.session.session_key,
-                        max_age=max_age,
-                        expires=expires,
-                        domain=settings.SESSION_COOKIE_DOMAIN,
-                        path=settings.SESSION_COOKIE_PATH,
-                        secure=settings.SESSION_COOKIE_SECURE or None,
-                        httponly=settings.SESSION_COOKIE_HTTPONLY or None,
-                        samesite=settings.SESSION_COOKIE_SAMESITE,
-                    )
+
         return response
