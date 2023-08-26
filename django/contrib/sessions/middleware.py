@@ -1,4 +1,5 @@
 import time
+import logging
 from importlib import import_module
 
 from django.conf import settings
@@ -7,6 +8,8 @@ from django.contrib.sessions.exceptions import SessionInterrupted
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import http_date
+
+logger = logging.getLogger('django.request')
 
 
 class SessionMiddleware(MiddlewareMixin):
@@ -52,5 +55,17 @@ class SessionMiddleware(MiddlewareMixin):
                     max_age = request.session.get_expiry_age()
                     expires_time = time.time() + max_age
                     expires = http_date(expires_time)
+                if response.status_code != 500:
+                    try:
+                        logger.warning("tried to save a session from django4", extra={
+                            "path": request.path,
+                            "email": request.user.email,
+                            "method": request.method,
+                            "status_code": response.status_code
+                        })
+                    except Exception as e:
+                        logger.warning(
+                            "Failed logging -tried to save a session from django4"
+                        )
 
         return response
