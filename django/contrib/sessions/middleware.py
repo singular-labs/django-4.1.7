@@ -47,25 +47,5 @@ class SessionMiddleware(MiddlewareMixin):
         else:
             if accessed:
                 patch_vary_headers(response, ("Cookie",))
-            if (modified or settings.SESSION_SAVE_EVERY_REQUEST) and not empty:
-                if request.session.get_expire_at_browser_close():
-                    max_age = None
-                    expires = None
-                else:
-                    max_age = request.session.get_expiry_age()
-                    expires_time = time.time() + max_age
-                    expires = http_date(expires_time)
-                if response.status_code != 500:
-                    try:
-                        logger.warning("tried to save a session from django4", extra={
-                            "path": request.path,
-                            "email": request.user.email,
-                            "method": request.method,
-                            "status_code": response.status_code
-                        })
-                    except Exception as e:
-                        logger.warning(
-                            "Failed logging -tried to save a session from django4"
-                        )
 
         return response

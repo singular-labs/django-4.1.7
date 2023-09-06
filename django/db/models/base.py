@@ -1064,16 +1064,6 @@ class Model(metaclass=ModelBase):
         # the field is nullable, allowing the save would result in silent data
         # loss.
         for field in self._meta.concrete_fields:
-            if isinstance(field, JSONField):
-                field_value = self.__getattribute__(field.name)
-                if field_value and not isinstance(field_value, (set, dict, list)) and \
-                    not hasattr(self, "history_user"):
-                    logger.warning("Found a JSONField with a bad type!", extra={
-                        "model": self.__class__.__name__,
-                        "field_name": field.name,
-                        "field_type": str(type(field_value)),
-                        "field_value": field_value,
-                    })
             if fields and field not in fields:
                 continue
             # If the related field isn't cached, then an instance hasn't been
