@@ -1,5 +1,4 @@
 import time
-import logging
 from importlib import import_module
 
 from django.conf import settings
@@ -8,8 +7,6 @@ from django.contrib.sessions.exceptions import SessionInterrupted
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import http_date
-
-logger = logging.getLogger('django.request')
 
 
 class SessionMiddleware(MiddlewareMixin):

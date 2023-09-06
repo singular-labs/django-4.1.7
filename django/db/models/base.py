@@ -4,7 +4,6 @@ import warnings
 from functools import partialmethod
 from itertools import chain
 from jsonfield.fields import JSONField
-import logging
 
 from django.db.models.query import QuerySet
 
@@ -55,8 +54,6 @@ from django.utils.encoding import force_str
 from django.utils.hashable import make_hashable
 from django.utils.text import capfirst, get_text_list
 from django.utils.translation import gettext_lazy as _
-
-logger = logging.getLogger('django.request')
 
 
 class Deferred:
