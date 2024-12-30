@@ -28,7 +28,7 @@ if "install" in sys.argv:
             break
 
 
-setup(version='4.1.7', name='singular_django')
+setup()
 
 
 if overlay_warning:
